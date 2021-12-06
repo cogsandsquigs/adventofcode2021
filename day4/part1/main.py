@@ -1,21 +1,64 @@
-lastcallednum = -1
-numslist = list(map(lambda x: int(x), open("input.txt", "r").readlines()[0].split(",")))
-x = list(
-    filter(
-        lambda x: x != "",
-        map(lambda x: x.replace("\n", ""), open("input.txt", "r").readlines()[1:]),
-    )
-)
-boardslist = list(
-    map(
-        lambda x: x.replace("  ", " "),
-        [
-            x[i] + " " + x[i + 1] + " " + x[i + 2] + " " + x[i + 3] + " " + x[i + 4]
-            if not len(x) % 5
-            else None
-            for i in range(0, len(x), 5)
-        ],
-    )
-)
+def get_input():
+    data = []
+    with open("input.txt") as f:
+        data = f.readlines()
+    return data
 
-print(boardslist)
+
+def mark_in_board(board, num):
+    m, n = len(board), len(board[0])
+    for i in range(m):
+        for j in range(n):
+            if board[i][j][0] == num:
+                board[i][j][1] = True
+
+
+def check_win(board):
+    m, n = len(board), len(board[0])
+    for i in range(m):
+        if sum(item[1] for item in board[i]) == n:
+            return True
+
+    transpose_board = list(zip(*board))
+    for j in range(n):
+        if sum(item[1] for item in transpose_board[j]) == m:
+            return True
+
+    return False
+
+
+def get_score(board):
+    m, n = len(board), len(board[0])
+    ans = 0
+    for i in range(m):
+        for j in range(n):
+            if not board[i][j][1]:  # we want unmarked
+                ans += board[i][j][0]
+
+    return ans
+
+
+def solve(data):
+    nums = list(map(int, data[0].split(",")))
+    boards = []
+    board = None
+    for line in data[1:]:
+        if len(line) == 1:
+            boards.append(board)
+            board = []
+        else:
+            line_nums = list(map(int, line.split()))
+            board.append([[line_num, False] for line_num in line_nums])
+
+    boards = boards[1:]  # first one is a None board
+
+    for num in nums:
+        for board in boards:
+            mark_in_board(board, num)
+            if check_win(board):
+                return get_score(board) * num
+
+    return 0
+
+
+print(solve(get_input()))
