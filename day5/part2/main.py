@@ -1,6 +1,6 @@
 l = list(
     filter(
-        lambda x: x[0][0] == x[1][0] or x[0][1] == x[1][1],
+        lambda x: x,
         map(
             lambda x: list(
                 [
@@ -22,9 +22,13 @@ for i in l:
     dy = abs(i[1][1] - i[0][1])
     dys = sign(i[1][1] - i[0][1])
     p = []
-    for m in range(dx + 1):
-        for n in range(dy + 1):
+    if dx == dy:
+        for m, n in zip(range(dx+1), range(dy+1)):
             p.append([i[0][0] + m * dxs, i[0][1] + n * dys])
+    else:
+        for m in range(dx + 1):
+            for n in range(dy + 1):
+                p.append([i[0][0] + m * dxs, i[0][1] + n * dys])
     u.append(p)
 u = [a for b in u for a in b]
 s = 0
